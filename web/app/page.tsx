@@ -8,6 +8,7 @@ const page = () => {
   return (
     <div>
       <ImageEditingCanvas/>
+      {/* <LassoCanvas imageSrc='/test2.jpg' height={100}/> */}
     </div>
   )
 }

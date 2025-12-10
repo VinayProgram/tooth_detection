@@ -27,21 +27,20 @@ const runSeg = async (segData: machineLearnDataType) => {
         const points = seg.polygon.map(([x, y]) => ({ x, y }));
 
         return new fabric.Polyline(points, {
-            opacity:1,
+            fill:"",
             stroke: "red",
             strokeWidth: 2,
             objectCaching: false,
-            absolutePositioned: true
+            // absolutePositioned: true
         });
     });
 
-    // Combine all polygons into a Group
-    const clipGroup = new fabric.Group(clipShapes, {
-        absolutePositioned: true
-    });
+
     canvas.add(img);
-    
-    canvas.add(clipGroup)
+    clipShapes.forEach((x)=>{
+        canvas.add(x)
+    })
+    // canvas.add(clipGroup)
     canvas.requestRenderAll();
 };
 
