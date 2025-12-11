@@ -1,16 +1,11 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import { getPolygonPoints, machineLearnDataType } from "../(api)/learn-api";
+import { getPolygonPoints, machineLearnDataType, useGetPolygonPoints } from "../(api)/learn-api";
 import * as fabric from 'fabric'; // v6
 const ImageEditingCanvas = ({canvasRef}:{canvasRef:React.RefObject<HTMLCanvasElement|null>}) => {
-    const [segData, setSegData] = React.useState<machineLearnDataType | null>(null)
-    React.useEffect(() => { gp() }, [canvasRef])
-    const gp = async () => {
-        const data = await getPolygonPoints()
-        setSegData(() => data)
-        await runSeg(data)
-    }
-
+    const{data:segData}=useGetPolygonPoints()
+    React.useEffect(()=>{if(segData)runSeg(segData)},[segData])
+    
     const polygonToSmoothPath = (points: { x: number; y: number }[]) => {
         if (points.length < 2) return "";
 
@@ -85,8 +80,6 @@ const ImageEditingCanvas = ({canvasRef}:{canvasRef:React.RefObject<HTMLCanvasEle
         clipShapes.forEach((poly) => {
             poly.on('mousedblclick', () => {
                 if (true) {
-                    cutImageWithPolygon(canvas, img, poly); // <--- CUT & ATTACH CLIPPED IMAGE
-
                     poly.cornerStyle = 'circle';
                     poly.cornerColor = 'rgba(0,0,255,0.2)';
                     poly.hasBorders = false;
@@ -107,7 +100,7 @@ const ImageEditingCanvas = ({canvasRef}:{canvasRef:React.RefObject<HTMLCanvasEle
         canvas.requestRenderAll();
     };
 
-    return  null;
+    return <>Running Point Selection</>;
 };
 
 export default ImageEditingCanvas;

@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { getPolygonPoints } from './(api)/learn-api'
-import ImageEditingCanvas from './(components)/canvas'
+import ImageEditingCanvas from './(components)/poly-selector'
 
 const page = () => {
 

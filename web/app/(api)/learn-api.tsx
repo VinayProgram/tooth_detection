@@ -1,3 +1,7 @@
+'use client'
+import { useQuery } from "@tanstack/react-query"
+import React from "react"
+
 export interface machineLearnDataType {
   original_width: number
   original_height: number
@@ -31,3 +35,9 @@ export const getPolygonPoints = async (): Promise<machineLearnDataType> => {
 
   return res.json() as Promise<machineLearnDataType>;
 };
+
+
+export const useGetPolygonPoints=()=>useQuery({
+  queryKey:['polygonPoints'],
+  queryFn:async()=>await getPolygonPoints()
+})
