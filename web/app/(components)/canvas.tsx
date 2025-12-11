@@ -2,23 +2,22 @@
 import React, { useEffect, useRef } from "react";
 import { getPolygonPoints, machineLearnDataType } from "../(api)/learn-api";
 import * as fabric from 'fabric'; // v6
-const ImageEditingCanvas = () => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+const ImageEditingCanvas = ({canvasRef}:{canvasRef:React.RefObject<HTMLCanvasElement|null>}) => {
     const [segData, setSegData] = React.useState<machineLearnDataType | null>(null)
-    React.useEffect(() => { gp() }, [])
+    React.useEffect(() => { gp() }, [canvasRef])
     const gp = async () => {
         const data = await getPolygonPoints()
         setSegData(() => data)
         await runSeg(data)
     }
 
-     const polygonToSmoothPath = (points: { x: number; y: number }[]) => {
+    const polygonToSmoothPath = (points: { x: number; y: number }[]) => {
         if (points.length < 2) return "";
 
         let path = `M ${points[0].x} ${points[0].y}`;
 
         for (let i = 1; i < points.length - 1; i++) {
-            const midX = (points[i].x + points[i + 1].x) / 2;
+            const midX = (points[i].x + points[i + 1].x) / 3;
             const midY = (points[i].y + points[i + 1].y) / 2;
 
             path += ` Q ${points[i].x} ${points[i].y} ${midX} ${midY}`;
@@ -32,6 +31,23 @@ const ImageEditingCanvas = () => {
         return path;
     };
 
+    const cutImageWithPolygon = (canvas: fabric.Canvas, img: fabric.FabricImage, polygon: fabric.Polyline) => {
+        // Clone the image so original stays untouched
+        const clipPolygon = new fabric.Polygon(
+            polygon.points!.map(p => ({ x: p.x, y: p.y })),
+        );
+
+        // Apply clipping
+        img.set({
+            clipPath: clipPolygon,
+            selectable: true,
+            evented: true,
+        });
+
+        canvas.add(img);
+        canvas.requestRenderAll();
+        return img
+    };
 
     const runSeg = async (segData: machineLearnDataType) => {
         const canvasEl = canvasRef.current;
@@ -41,7 +57,6 @@ const ImageEditingCanvas = () => {
             width: segData.original_width,
             height: segData.original_height,
         });
-
         const img = await fabric.FabricImage.fromURL("/test2.jpg");
 
         // Convert all segmentation polygons to fabric polyline objects
@@ -66,14 +81,17 @@ const ImageEditingCanvas = () => {
             lockMovementY: true,
         });
         canvas.add(img);
-        
+
         clipShapes.forEach((poly) => {
             poly.on('mousedblclick', () => {
                 if (true) {
+                    cutImageWithPolygon(canvas, img, poly); // <--- CUT & ATTACH CLIPPED IMAGE
+
                     poly.cornerStyle = 'circle';
                     poly.cornerColor = 'rgba(0,0,255,0.2)';
                     poly.hasBorders = false;
                     poly.controls = fabric.controlsUtils.createPolyControls(poly);
+
                 } else {
                     poly.cornerColor = 'blue';
                     poly.cornerStyle = 'rect';
@@ -89,16 +107,7 @@ const ImageEditingCanvas = () => {
         canvas.requestRenderAll();
     };
 
-
-
- 
-
-    return (
-        <canvas
-            ref={canvasRef}
-            style={{ border: "1px solid #ccc", width: "100%", height: "auto" }}
-        />
-    );
+    return  null;
 };
 
 export default ImageEditingCanvas;
