@@ -1,12 +1,26 @@
 import { create } from 'zustand'
-
-type Store = {
-  count: number
-  inc: () => void
+import * as fabric from 'fabric'
+type ClipStore = {
+  clipShapes: fabric.Polyline<{
+    fill: string;
+    strokeWidth: number;
+    stroke: string;
+    objectCaching: false;
+    transparentCorners: false;
+    cornerColor: string;
+  }, fabric.SerializedPolylineProps, fabric.ObjectEvents>[]|null
+  selClipShapes: (set: fabric.Polyline<{
+    fill: string;
+    strokeWidth: number;
+    stroke: string;
+    objectCaching: false;
+    transparentCorners: false;
+    cornerColor: string;
+  }, fabric.SerializedPolylineProps, fabric.ObjectEvents>[]) => void
 }
 
-const useStore = create<Store>()((set) => ({
-  count: 1,
-  inc: () => set((state) => ({ count: state.count + 1 })),
+export const useClipStore = create<ClipStore>()((set) => ({
+  clipShapes:null,
+  selClipShapes:(seg)=>{set({clipShapes:seg})}
 }))
 
