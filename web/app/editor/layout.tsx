@@ -7,9 +7,7 @@ const layout = ({children}:{children:any}) => {
   return (
     <div>
     <QueryClientProvider client={queryClient}>
-      <CanvasProvider>
         {children}
-      </CanvasProvider>
     </QueryClientProvider>
     </div>
   )
