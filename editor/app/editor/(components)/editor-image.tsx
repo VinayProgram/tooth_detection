@@ -3,11 +3,12 @@ import { Box, Line, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { useEffect, useRef, useState } from "react";
 import { poly } from "./seg";
+import { useClipStore } from "@/app/store/clip-store";
 
-const Editor = ({ onMask }: { onMask?: { action: string; newTime: string } }) => {
+const EditorImage = () => {
+  const {onMask}=useClipStore()
   const imageMeshRef = useRef<THREE.Mesh>(null);
   const texture = useTexture("/test2.jpg");
-
   const [boxSize, setBoxSize] = useState<[number, number, number]>([1, 1, 0]);
   const [points3D, setPoints3D] = useState<{ [key: string]: THREE.Vector3[] }>({});
   const [activeKey, setActiveKey] = useState<string>("auto");
@@ -118,7 +119,7 @@ const Editor = ({ onMask }: { onMask?: { action: string; newTime: string } }) =>
     if (!points3D[activeKey]) return;
 
     applyMask(points3D[activeKey]);
-  }, [onMask?.action]);
+  }, [onMask]);
 
   // ---------------------------------------------------
   // RENDER
@@ -134,7 +135,7 @@ const Editor = ({ onMask }: { onMask?: { action: string; newTime: string } }) =>
         onDoubleClick={handleNewPolygon}
       >
         <meshBasicMaterial
-          map={maskedTexture || texture}
+          map={maskedTexture ?? texture}
           transparent
         />
       </Box>
@@ -142,8 +143,7 @@ const Editor = ({ onMask }: { onMask?: { action: string; newTime: string } }) =>
       {/* Draw polygons */}
       {Object.keys(points3D).map(key => {
         const pts = points3D[key];
-        if (pts.length < 2) return null;
-
+        if(pts.length<2)return
         return (
           <Line
             key={key}
@@ -169,4 +169,4 @@ const Editor = ({ onMask }: { onMask?: { action: string; newTime: string } }) =>
   );
 };
 
-export default Editor;
+export default EditorImage;
