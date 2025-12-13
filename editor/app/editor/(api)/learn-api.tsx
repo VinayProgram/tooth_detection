@@ -25,7 +25,7 @@ export interface Bbox {
 }
 
 export const getPolygonPoints = async (): Promise<machineLearnDataType> => {
-  const res = await fetch("http://localhost:3000/machine-learn", {
+  const res = await fetch("http://localhost:7541/machine-learn", {
     method: "POST",
   });
 

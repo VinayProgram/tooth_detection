@@ -19,23 +19,13 @@ const EditorImage = () => {
   // ---------------------------------------------------
   useEffect(() => {
     if (!texture.image) return;
-    
-    const img = texture.image as HTMLImageElement;
+     const img = texture.image as HTMLImageElement;
     const w = img.width;
     const h = img.height;
-
+    console.log(w,h)
     const HEIGHT = 10;
     const WIDTH = (w / h) * HEIGHT;
-
     setBoxSize([WIDTH, HEIGHT, 0.1]);
-
-    const worldPts = poly.map(([px, py]) => {
-      const x = (px / w) * WIDTH - WIDTH / 2;
-      const y = -(py / h) * HEIGHT + HEIGHT / 2;
-      return new THREE.Vector3(x, y, 0.05);
-    });
-
-    setPoints3D({ auto: worldPts });
     setActiveKey("auto");
     setOringalImageTexture(texture)
   }, [texture]);
@@ -63,7 +53,6 @@ const EditorImage = () => {
     if (!points3D) return;
     const masks:THREE.CanvasTexture<HTMLCanvasElement>[]=[]
     let excludedTexture:any=null
-    console.log(points3D)
     for (const key in points3D) {
       const element = points3D[key];
       if(element.length==0)continue
@@ -75,14 +64,12 @@ const EditorImage = () => {
         globalCompositeOperation:onMask.action,
         orignalImageMeshRef:orignalImageMeshRef.current as THREE.Mesh,
         polygon:element,
-        texture:excludedTexture??texture
+        texture: onMask.action=='destination-in'?texture:excludedTexture??texture
       });
-      console.log(mask)
       excludedTexture=mask
       mask&&masks.push(mask)
     }
-    console.log(masks,excludedTexture)
-    console.log(onMask)
+   
     onMask.action=='destination-out'?setOringalImageTexture(excludedTexture as any):setMaskedTexture(masks)
   }, [onMask]);
 
