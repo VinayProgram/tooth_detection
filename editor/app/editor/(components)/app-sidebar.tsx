@@ -27,7 +27,10 @@ export function AppSidebar() {
             <SidebarMenu>
              
                 <SidebarMenuItem >
-                  <Button onClick={()=>setOnMask({action:"include",newTime:Date.now()+""})}>Include Lasso</Button>
+                  <div className="flex">
+                  <Button onClick={()=>setOnMask({action:"destination-in",newTime:Date.now()+""})}>Include Lasso</Button>
+                  <Button onClick={()=>setOnMask({action:"destination-out",newTime:Date.now()+""})}>Exclude Lasso</Button>
+                </div>
                 </SidebarMenuItem>
              
             </SidebarMenu>
