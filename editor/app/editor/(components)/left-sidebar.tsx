@@ -16,21 +16,23 @@ import { useClipStore } from "@/app/store/clip-store"
 
 
 
-export function AppSidebar() {
-  const {setOnMask}=useClipStore()
+export function LeftSidebar() {
+  const {points3D}=useClipStore()
   return (
-    <Sidebar>
+    <Sidebar side={'right'} >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Left Sidebar</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
                 <SidebarMenuItem >
-                  <div className="flex">
-                  <Button onClick={()=>setOnMask({action:"destination-in",newTime:Date.now()+""})}>Include Lasso</Button>
-                  <Button onClick={()=>setOnMask({action:"destination-out",newTime:Date.now()+""})}>Exclude Lasso</Button>
-                </div>
+                {Object.keys(points3D).map((x)=>{
+                    return (
+                        <Button> Segments {x} </Button>
+                    )
+                })}
                 </SidebarMenuItem>
+             
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -60,7 +60,7 @@ const MenuActions = () => {
         <div>
             <Menubar>
                 <MenubarMenu>
-                    <SidebarTrigger />
+                    {/* <SidebarTrigger  /> */}
                     <MenubarTrigger>File</MenubarTrigger>
 
                     <MenubarContent>

@@ -1,9 +1,8 @@
 import { create } from 'zustand'
-import { globalCompositeOperationType } from '../editor/utils/masking';
 import * as THREE from 'three'
 type ClipStore = {
-  onMask: { action: globalCompositeOperationType; newTime: string } 
-  setOnMask:(mask:{ action: globalCompositeOperationType; newTime: string })=>void
+  onMask: { action: GlobalCompositeOperation; newTime: string } 
+  setOnMask:(mask:{ action: GlobalCompositeOperation; newTime: string })=>void
   points3D:{ [key: string]: THREE.Vector3[] }
   setPoints3D:(data:{ [key: string]: THREE.Vector3[] })=>void
   orignalImageTexture:THREE.Texture<unknown>|null,

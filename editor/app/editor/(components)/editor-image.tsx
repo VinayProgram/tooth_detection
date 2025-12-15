@@ -4,17 +4,17 @@ import * as THREE from "three";
 import { useEffect, useRef, useState } from "react";
 import { poly } from "./seg";
 import { useClipStore } from "@/app/store/clip-store";
-import { applyMask } from "../utils/masking";
+import { applyMask, processMasks } from "../utils/masking";
 import { useSearchParams } from "next/navigation";
 
 const EditorImage = () => {
-  const params=useSearchParams()
-  const fileName=params.get('file')
-  const {onMask,setPoints3D,points3D,orignalImageTexture,setOringalImageTexture}=useClipStore()
+  const params = useSearchParams()
+  const fileName = params.get('file')
+  const { onMask, setPoints3D, points3D, orignalImageTexture, setOringalImageTexture } = useClipStore()
   const orignalImageMeshRef = useRef<THREE.Mesh>(null);
   const texture = useTexture(`http://localhost:7541/static/${fileName}`);
   const [boxSize, setBoxSize] = useState<[number, number, number]>([1, 1, 0]);
-  const [activeKey, setActiveKey] = useState<string>("auto");
+  const [activeKey, setActiveKey] = useState<string>( "poly_" + Date.now());
   const [maskedTexture, setMaskedTexture] = useState<THREE.Texture[] | null>([]);
 
   // ---------------------------------------------------
@@ -22,14 +22,12 @@ const EditorImage = () => {
   // ---------------------------------------------------
   useEffect(() => {
     if (!texture.image) return;
-     const img = texture.image as HTMLImageElement;
+    const img = texture.image as HTMLImageElement;
     const w = img.width;
     const h = img.height;
-    console.log(w,h)
     const HEIGHT = 10;
     const WIDTH = (w / h) * HEIGHT;
     setBoxSize([WIDTH, HEIGHT, 0.1]);
-    setActiveKey("auto");
     setOringalImageTexture(texture)
   }, [texture]);
 
@@ -50,69 +48,53 @@ const EditorImage = () => {
 
 
 
+  useEffect(() => {
+    if (!onMask || !points3D || !orignalImageMeshRef.current) return;
 
-   useEffect(() => {
-    if (!onMask) return;
-    if (!points3D) return;
-    const masks:THREE.CanvasTexture<HTMLCanvasElement>[]=[]
-    let excludedTexture:any=null
-    for (const key in points3D) {
-      const element = points3D[key];
-      if(element.length==0)continue
-      const mask=applyMask({
-        boxSize:{
-          height:boxSize[1],
-          width:boxSize[0]
-        },
-        globalCompositeOperation:onMask.action,
-        orignalImageMeshRef:orignalImageMeshRef.current as THREE.Mesh,
-        polygon:element,
-        texture: onMask.action=='destination-in'?texture:excludedTexture??texture
-      });
-      excludedTexture=mask
-      mask&&masks.push(mask)
+    const { masks, excludedTexture } = processMasks({
+      points3D,
+      boxSize,
+      onMask,
+      texture,
+      originalMesh: orignalImageMeshRef.current,
+    });
+
+    if (onMask.action === "destination-out") {
+      setOringalImageTexture(excludedTexture as any);
+    } else {
+      setMaskedTexture(masks);
     }
-   
-    onMask.action=='destination-out'?setOringalImageTexture(excludedTexture as any):setMaskedTexture(masks)
   }, [onMask]);
 
-  // ---------------------------------------------------
-  // RENDER
-  // ---------------------------------------------------
-  console.dir(orignalImageTexture,{depth:100})
-  console.log(maskedTexture)
+
+
   return (
     <>
-      {maskedTexture?.length==0&&
-      <Box
-        args={boxSize}
-        ref={orignalImageMeshRef}
-        position={[0, 0, 0]}
-        onClick={handleAddPoint}
-        onDoubleClick={handleNewPolygon}
-      >
-        <meshBasicMaterial
-          map={orignalImageTexture??texture}
-          transparent
-        />
-      </Box>
+      {maskedTexture?.length == 0 &&
+        <Box
+          args={boxSize}
+          ref={orignalImageMeshRef}
+          position={[0, 0, 0]}
+          onClick={handleAddPoint}
+          onDoubleClick={handleNewPolygon}
+        >
+          <meshBasicMaterial
+            map={orignalImageTexture ?? texture}
+            transparent
+          />
+        </Box>
       }
 
-      
-
-      
-
-
       {/* Draw polygons */}
-      {Object.keys(points3D).map(key => {
+      {points3D && Object.keys(points3D).map(key => {
         const pts = points3D[key];
-        if(pts.length<2)return
+        console.log('====', pts)
+        if (pts.length < 2) return
         return (
           <Line
-            key={key}
             points={pts}
-            color={key === activeKey ? "yellow" : "blue"}
-            lineWidth={3}
+            color={"yellow"}
+            lineWidth={10}
           />
         );
       })}
@@ -130,19 +112,17 @@ const EditorImage = () => {
       )}
 
       {
-        maskedTexture?.map((x)=>{
-          return(
-              <Box
-        args={boxSize}
-        position={[0, 0, 0]}
-        onClick={handleAddPoint}
-        onDoubleClick={handleNewPolygon}
-      >
-        <meshBasicMaterial
-          map={x}
-          transparent
-        />
-      </Box>
+        maskedTexture?.map((x) => {
+          return (
+            <Box
+              args={boxSize}
+              position={[0, 0, 0]}
+            >
+              <meshBasicMaterial
+                map={x}
+                transparent
+              />
+            </Box>
           )
         })
       }
