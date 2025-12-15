@@ -1,5 +1,5 @@
 'use client'
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import React from "react"
 
 export interface machineLearnDataType {
@@ -24,9 +24,10 @@ export interface Bbox {
   height: number
 }
 
-export const getPolygonPoints = async (): Promise<machineLearnDataType> => {
+export const postPolygonPoints = async (data:any): Promise<machineLearnDataType> => {
   const res = await fetch("http://localhost:7541/machine-learn", {
     method: "POST",
+    body:data
   });
 
   if (!res.ok) {
@@ -37,7 +38,7 @@ export const getPolygonPoints = async (): Promise<machineLearnDataType> => {
 };
 
 
-export const useGetPolygonPoints=()=>useQuery({
-  queryKey:['polygonPoints'],
-  queryFn:async()=>await getPolygonPoints()
+export const useGetPolygonPoints=()=>useMutation({
+  mutationKey:['polygonPoints'],
+  mutationFn:async(data)=>await postPolygonPoints(data)
 })

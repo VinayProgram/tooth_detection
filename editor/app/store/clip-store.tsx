@@ -7,7 +7,7 @@ type ClipStore = {
   points3D:{ [key: string]: THREE.Vector3[] }
   setPoints3D:(data:{ [key: string]: THREE.Vector3[] })=>void
   orignalImageTexture:THREE.Texture<unknown>|null,
-  setOringalImageTexture:(data:THREE.Texture<unknown>)=>void
+  setOringalImageTexture:(data:THREE.Texture<unknown>)=>void,
 }
 
 export const useClipStore = create<ClipStore>()((set) => ({
