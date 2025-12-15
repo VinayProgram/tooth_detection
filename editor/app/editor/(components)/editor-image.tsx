@@ -5,11 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import { poly } from "./seg";
 import { useClipStore } from "@/app/store/clip-store";
 import { applyMask } from "../utils/masking";
+import { useSearchParams } from "next/navigation";
 
 const EditorImage = () => {
+  const params=useSearchParams()
+  const fileName=params.get('file')
   const {onMask,setPoints3D,points3D,orignalImageTexture,setOringalImageTexture}=useClipStore()
   const orignalImageMeshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture("/test2.jpg");
+  const texture = useTexture(`http://localhost:7541/static/${fileName}`);
   const [boxSize, setBoxSize] = useState<[number, number, number]>([1, 1, 0]);
   const [activeKey, setActiveKey] = useState<string>("auto");
   const [maskedTexture, setMaskedTexture] = useState<THREE.Texture[] | null>([]);

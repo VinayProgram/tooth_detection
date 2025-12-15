@@ -6,8 +6,8 @@ export class MachineLearnService {
   constructor(
     private readonly yoloservice:YoloService
   ){}
-  async create(path:string) {
-    return await this.yoloservice.runYOLO(path)
+  async create(path:string,filename:string) {
+    return await this.yoloservice.runYOLO(path,filename)
   }
 
 }

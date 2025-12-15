@@ -24,11 +24,34 @@ export interface Bbox {
   height: number
 }
 
-export const postPolygonPoints = async (data:any): Promise<machineLearnDataType> => {
+export interface ModalUploadFileResult {
+  fieldname: string
+  originalname: string
+  encoding: string
+  mimetype: string
+  destination: string
+  filename: string
+  path: string
+  size: number
+}
+
+
+export const postPolygonPoints = async (data: FormData): Promise<ModalUploadFileResult> => {
   const res = await fetch("http://localhost:7541/machine-learn", {
     method: "POST",
-    body:data
+    body: data, 
   });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch polygon data");
+  }
+
+  return res.json() as Promise<ModalUploadFileResult>;
+};
+
+
+export const getPolygonPoints = async (id:string): Promise<machineLearnDataType> => {
+  const res = await fetch("http://localhost:7541/machine-learn/"+id);
 
   if (!res.ok) {
     throw new Error("Failed to fetch polygon data");
@@ -37,8 +60,12 @@ export const postPolygonPoints = async (data:any): Promise<machineLearnDataType>
   return res.json() as Promise<machineLearnDataType>;
 };
 
-
-export const useGetPolygonPoints=()=>useMutation({
+export const usePostPolygonPoints=()=>useMutation({
   mutationKey:['polygonPoints'],
-  mutationFn:async(data)=>await postPolygonPoints(data)
+  mutationFn:async(data:FormData)=>await postPolygonPoints(data)
+})
+
+export const useGetPolygonPoints=(id:string)=>useQuery({
+  queryKey:['polygonPoints',id],
+  queryFn:async()=>await getPolygonPoints(id)
 })

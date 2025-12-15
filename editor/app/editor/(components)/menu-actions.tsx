@@ -13,8 +13,11 @@ import { useGetPolygonPoints } from "../(api)/learn-api"
 import React from "react"
 import * as THREE from 'three'
 import { useClipStore } from "@/app/store/clip-store"
+import { useSearchParams } from "next/navigation"
 const MenuActions = () => {
-    const { data: points } = useGetPolygonPoints()
+    const params=useSearchParams()
+    const fileName=params.get('file')
+    const { data: points } = useGetPolygonPoints(fileName??"")
     const { setPoints3D, points3D } = useClipStore()
     const data = React.useMemo(() => {
         return points?.segments.map(segments => {

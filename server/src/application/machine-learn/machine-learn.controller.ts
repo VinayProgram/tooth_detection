@@ -7,6 +7,7 @@ import { diskStorage } from 'multer';
 @Controller('machine-learn')
 export class MachineLearnController {
   constructor(private readonly machineLearnService: MachineLearnService) { }
+
  @UseInterceptors(FileInterceptor('file', {
   storage:diskStorage({
       destination: join(__dirname, '../../..', 'public'),
@@ -22,9 +23,13 @@ export class MachineLearnController {
     })}))
   @Post()
   async create(@UploadedFile() file: Express.Multer.File) {
-    console.log(file)
-    return await this.machineLearnService.create(`http://localhost:7541/static/${file.filename}`);
+    return file;
   }
 
 
+  @Get('/:filename')
+  async getAiSegmentData(@Param('filename') filename:string){
+    console.log(filename)
+    return await this.machineLearnService.create(`http://localhost:7541/static/${filename}`,filename);
+  }
 }
