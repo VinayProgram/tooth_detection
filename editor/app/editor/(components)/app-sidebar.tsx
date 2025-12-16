@@ -19,7 +19,7 @@ import { useClipStore } from "@/app/store/clip-store"
 export function AppSidebar() {
   const {setOnMask}=useClipStore()
   return (
-    <Sidebar>
+    <Sidebar collapsible="offcanvas" variant="floating" >
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>

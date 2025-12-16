@@ -7,10 +7,14 @@ import { OrbitControls } from '@react-three/drei'
 
 const page = () => {
   return (
-    <Canvas>
+   <div className="@container/main flex flex-1 flex-col">
+      <div className="flex flex-col gap-4 ">
+    <Canvas style={{height:'94vh'}}>
       <EditorImage/>
       <OrbitControls enableRotate={false}/>
     </Canvas>
+   </div>
+   </div>
   )
 }
 
