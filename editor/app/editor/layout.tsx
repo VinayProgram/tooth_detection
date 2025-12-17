@@ -29,6 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <MenuActions />
         <div className="flex flex-1 flex-col">{children}</div>
       </SidebarInset>
+      <LeftSidebar/>
     </SidebarProvider>
     </QueryClientProvider>
   )

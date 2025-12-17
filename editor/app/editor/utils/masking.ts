@@ -80,7 +80,7 @@ type MaskProcessorResult = {
   excludedTexture: THREE.CanvasTexture<HTMLCanvasElement> | null;
 };
 
-export function processMasks({
+export function processDestinationIn({
   points3D,
   boxSize,
   onMask,
@@ -89,7 +89,6 @@ export function processMasks({
 }: MaskProcessorParams): MaskProcessorResult {
   const masks: THREE.CanvasTexture<HTMLCanvasElement>[] = [];
   let excludedTexture: THREE.CanvasTexture<HTMLCanvasElement> | null = null;
-
   for (const key in points3D) {
     const polygon = points3D[key];
     if (!polygon?.length) continue;
@@ -102,10 +101,7 @@ export function processMasks({
       globalCompositeOperation: onMask.action ,
       orignalImageMeshRef: originalMesh,
       polygon,
-      texture:
-        onMask.action === "destination-in"
-          ? texture
-          : excludedTexture ?? texture,
+      texture:texture
     });
 
     if (!mask) continue;
@@ -117,6 +113,38 @@ export function processMasks({
   return { masks, excludedTexture };
 }
 
+export function processDestinationOut({
+  points3D,
+  boxSize,
+  onMask,
+  texture,
+  originalMesh,
+}: MaskProcessorParams): MaskProcessorResult {
+  const masks: THREE.CanvasTexture<HTMLCanvasElement>[] = [];
+  let excludedTexture: THREE.CanvasTexture<HTMLCanvasElement> | null = null;
+  for (const key in points3D) {
+    const polygon = points3D[key];
+    if (!polygon?.length) continue;
+
+    const mask = applyMask({
+      boxSize: {
+        height: boxSize[1],
+        width: boxSize[0],
+      },
+      globalCompositeOperation: onMask.action ,
+      orignalImageMeshRef: originalMesh,
+      polygon,
+      texture: excludedTexture ?? texture
+    });
+
+    if (!mask) continue;
+
+    excludedTexture = mask;
+    masks.push(mask);
+  }
+
+  return { masks, excludedTexture };
+}
 
 //destination-in
 
@@ -124,13 +152,3 @@ export function processMasks({
 
 //both
 
-export function actionOnImageRef(){
-  switch (key) {
-    case value:
-      
-      break;
-  
-    default:
-      break;
-  }
-}

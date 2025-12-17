@@ -1,11 +1,11 @@
 import { useClipStore } from "@/app/store/clip-store";
 import React, { RefObject } from "react";
-import { processMasks } from "../utils/masking";
+import { processDestinationIn, processDestinationOut } from "../utils/masking";
 import * as THREE from 'three'
 export const useProcessMasks = () => {
-    const { onMask,points3D,orignalImageMeshRef,boxSize,imageTexture } = useClipStore()
+    const { onMask, points3D, orignalImageMeshRef, boxSize, imageTexture } = useClipStore()
     return React.useCallback(() => {
-        const { masks, excludedTexture } = processMasks({
+        return actionFunction(onMask.action)({
             points3D,
             boxSize,
             onMask,
@@ -16,18 +16,28 @@ export const useProcessMasks = () => {
 }
 
 
-export const useIntializeImage=(imageTexture:THREE.Texture<unknown>,orignalImageMeshRef:THREE.Mesh)=>{
-    const { setBoxSize,setImageTexture,setOrignalImageMeshRef } = useClipStore()
+export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalImageMeshRef: THREE.Mesh) => {
+    const { setBoxSize, setImageTexture, setOrignalImageMeshRef } = useClipStore()
 
     React.useEffect(() => {
-    if (!imageTexture.image) return;
-    const img = imageTexture.image as HTMLImageElement;
-    const w = img.width;
-    const h = img.height;
-    const HEIGHT = 10;
-    const WIDTH = (w / h) * HEIGHT;
-    setBoxSize([WIDTH, HEIGHT, 0.1]);
-    setImageTexture(imageTexture)
-    orignalImageMeshRef&&setOrignalImageMeshRef(orignalImageMeshRef)
-  }, [imageTexture]);
+        if (!imageTexture.image) return;
+        const img = imageTexture.image as HTMLImageElement;
+        const w = img.width;
+        const h = img.height;
+        const HEIGHT = 10;
+        const WIDTH = (w / h) * HEIGHT;
+        setBoxSize([WIDTH, HEIGHT, 0.1]);
+        setImageTexture(imageTexture)
+        orignalImageMeshRef && setOrignalImageMeshRef(orignalImageMeshRef)
+    }, [imageTexture]);
+}
+
+
+const actionFunction = (action: GlobalCompositeOperation) => {
+    switch (action) {
+        case "destination-in":
+            return processDestinationIn
+        default:
+            return processDestinationIn;
+    }
 }

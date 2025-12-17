@@ -4,7 +4,6 @@ import * as THREE from "three";
 import { useEffect, useRef, useState } from "react";
 import { poly } from "./seg";
 import { useClipStore } from "@/app/store/clip-store";
-import { applyMask, processMasks } from "../utils/masking";
 import { useSearchParams } from "next/navigation";
 import { useIntializeImage } from "../(hooks)/lasso-tool.hook";
 

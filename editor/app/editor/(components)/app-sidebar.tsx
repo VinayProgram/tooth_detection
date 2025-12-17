@@ -13,11 +13,18 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { useClipStore } from "@/app/store/clip-store"
+import { useProcessMasks } from "../(hooks)/lasso-tool.hook"
 
 
 
 export function AppSidebar() {
   const {setOnMask}=useClipStore()
+  const actionFn=useProcessMasks()
+
+  const callAction=(action:GlobalCompositeOperation)=>{
+    setOnMask({action:action,newTime:Date.now()+""})
+    actionFn()
+  }
   return (
     <Sidebar collapsible="offcanvas" variant="floating" >
       <SidebarContent>
@@ -27,8 +34,8 @@ export function AppSidebar() {
             <SidebarMenu>
                 <SidebarMenuItem >
                   <div className="flex">
-                  <Button onClick={()=>setOnMask({action:"destination-in",newTime:Date.now()+""})}>Include Lasso</Button>
-                  <Button onClick={()=>setOnMask({action:"destination-out",newTime:Date.now()+""})}>Exclude Lasso</Button>
+                  <Button onClick={()=>{callAction('destination-in')}}>Include Lasso</Button>
+                  <Button onClick={()=>{callAction('destination-out')}}>Exclude Lasso</Button>
                 </div>
                 </SidebarMenuItem>
             </SidebarMenu>
