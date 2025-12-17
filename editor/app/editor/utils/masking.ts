@@ -116,3 +116,21 @@ export function processMasks({
 
   return { masks, excludedTexture };
 }
+
+
+//destination-in
+
+//destination-out
+
+//both
+
+export function actionOnImageRef(){
+  switch (key) {
+    case value:
+      
+      break;
+  
+    default:
+      break;
+  }
+}

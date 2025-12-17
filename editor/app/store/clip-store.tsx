@@ -3,20 +3,38 @@ import * as THREE from 'three'
 type ClipStore = {
   onMask: { action: GlobalCompositeOperation; newTime: string } 
   setOnMask:(mask:{ action: GlobalCompositeOperation; newTime: string })=>void
+
   points3D:{ [key: string]: THREE.Vector3[] }
   setPoints3D:(data:{ [key: string]: THREE.Vector3[] })=>void
-  orignalImageTexture:THREE.Texture<unknown>|null,
-  setOringalImageTexture:(data:THREE.Texture<unknown>)=>void,
+
+ 
+  orignalImageMeshRef:THREE.Mesh|null
+  setOrignalImageMeshRef:(data:THREE.Mesh)=>void
+
+  boxSize:[number, number, number]
+  setBoxSize:(boxSize:[number, number, number])=>void
+
+  imageTexture:THREE.Texture<unknown>|null,
+  setImageTexture:(img:THREE.Texture<unknown>)=>void
 }
 
 export const useClipStore = create<ClipStore>()((set) => ({
-onMask:{action:"destination-in",newTime:""},
+onMask:{action:'destination-in',newTime:""},
 setOnMask:(mask)=>set({onMask:mask}) ,
+
 points3D:{},
 setPoints3D:(data)=>{set({points3D:data})},
-orignalImageTexture:null,
-setOringalImageTexture(data) {
-  set({orignalImageTexture:data})
+
+orignalImageMeshRef:null,
+setOrignalImageMeshRef(data) {
+  set({orignalImageMeshRef:data})
 },
+
+
+boxSize:[1, 1, 0],
+setBoxSize:(d)=>{set({boxSize:d})},
+
+imageTexture:null,
+setImageTexture:(img)=>set({imageTexture:img})
 }))
 

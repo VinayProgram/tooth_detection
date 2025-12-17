@@ -6,31 +6,16 @@ import { poly } from "./seg";
 import { useClipStore } from "@/app/store/clip-store";
 import { applyMask, processMasks } from "../utils/masking";
 import { useSearchParams } from "next/navigation";
+import { useIntializeImage } from "../(hooks)/lasso-tool.hook";
 
 const EditorImage = () => {
   const params = useSearchParams()
-  const fileName = params.get('file')
-  const { onMask, setPoints3D, points3D, orignalImageTexture, setOringalImageTexture } = useClipStore()
   const orignalImageMeshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture(`http://localhost:7541/static/${fileName}`);
-  const [boxSize, setBoxSize] = useState<[number, number, number]>([1, 1, 0]);
+  const fileName = params.get('file')
+  const { setPoints3D, points3D, boxSize } = useClipStore()
+  const imageTexture = useTexture(`http://localhost:7541/static/${fileName}`);
   const [activeKey, setActiveKey] = useState<string>( "poly_" + Date.now());
-  const [maskedTexture, setMaskedTexture] = useState<THREE.Texture[] | null>([]);
-
-  // ---------------------------------------------------
-  // INIT IMAGE SIZE + DEFAULT POLYGON
-  // ---------------------------------------------------
-  useEffect(() => {
-    if (!texture.image) return;
-    const img = texture.image as HTMLImageElement;
-    const w = img.width;
-    const h = img.height;
-    const HEIGHT = 10;
-    const WIDTH = (w / h) * HEIGHT;
-    setBoxSize([WIDTH, HEIGHT, 0.1]);
-    setOringalImageTexture(texture)
-  }, [texture]);
-
+  useIntializeImage(imageTexture,orignalImageMeshRef.current!)
 
   const handleAddPoint = (e: any) => {
     const clone = e.point.clone();
@@ -47,30 +32,8 @@ const EditorImage = () => {
   };
 
 
-
-  useEffect(() => {
-    if (!onMask || !points3D || !orignalImageMeshRef.current) return;
-
-    const { masks, excludedTexture } = processMasks({
-      points3D,
-      boxSize,
-      onMask,
-      texture,
-      originalMesh: orignalImageMeshRef.current,
-    });
-
-    if (onMask.action === "destination-out") {
-      setOringalImageTexture(excludedTexture as any);
-    } else {
-      setMaskedTexture(masks);
-    }
-  }, [onMask]);
-
-
-
   return (
     <>
-      {maskedTexture?.length == 0 &&
         <Box
           args={boxSize}
           ref={orignalImageMeshRef}
@@ -79,16 +42,13 @@ const EditorImage = () => {
           onDoubleClick={handleNewPolygon}
         >
           <meshBasicMaterial
-            map={orignalImageTexture ?? texture}
+            map={imageTexture}
             transparent
           />
         </Box>
-      }
 
-      {/* Draw polygons */}
       {points3D && Object.keys(points3D).map(key => {
         const pts = points3D[key];
-        console.log('====', pts)
         if (pts.length < 2) return
         return (
           <Line
@@ -111,7 +71,7 @@ const EditorImage = () => {
         ))
       )}
 
-      {
+      {/* {
         maskedTexture?.map((x) => {
           return (
             <Box
@@ -125,7 +85,7 @@ const EditorImage = () => {
             </Box>
           )
         })
-      }
+      } */}
     </>
   );
 };
