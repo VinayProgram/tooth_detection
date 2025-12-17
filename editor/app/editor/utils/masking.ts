@@ -40,7 +40,7 @@ export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
   canvas.width = img.width;
   canvas.height = img.height;
   const ctx = canvas.getContext("2d")!;
-
+  console.log(img)
   ctx.drawImage(img, 0, 0);
 
   ctx.globalCompositeOperation = args.globalCompositeOperation;
@@ -49,7 +49,7 @@ export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
     const uv = convert3DToUV({ ...args, point: p });
     return { x: uv.u * img.width, y: uv.v * img.height };
   });
-
+  console.warn(pts)
   ctx.beginPath();
   ctx.moveTo(pts[0].x, pts[0].y);
   pts.slice(1).forEach(pt => ctx.lineTo(pt.x, pt.y));
@@ -103,7 +103,7 @@ export function processDestinationIn({
       polygon,
       texture:texture
     });
-
+    console.log(mask)
     if (!mask) continue;
 
     excludedTexture = mask;

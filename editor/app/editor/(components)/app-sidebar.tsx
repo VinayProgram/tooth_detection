@@ -1,5 +1,4 @@
 'use client'
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -14,16 +13,29 @@ import {
 import { Button } from "@/components/ui/button"
 import { useClipStore } from "@/app/store/clip-store"
 import { useProcessMasks } from "../(hooks)/lasso-tool.hook"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 
 
 
 export function AppSidebar() {
-  const {setOnMask}=useClipStore()
-  const actionFn=useProcessMasks()
+  const { setOnMask,setDestinationInCutOuts } = useClipStore()
+  const actionFn = useProcessMasks()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
 
-  const callAction=(action:GlobalCompositeOperation)=>{
-    setOnMask({action:action,newTime:Date.now()+""})
-    actionFn()
+  const callAction = (action: GlobalCompositeOperation) => {
+    setOnMask({ action: action, newTime: Date.now() + "" })
+    const {masks}=actionFn()
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (action == 'destination-in') {
+      params.set('stage', 'showmasks')
+      setDestinationInCutOuts(masks)
+      router.push(pathname + '?' + params.toString())
+      
+    } 
   }
   return (
     <Sidebar collapsible="offcanvas" variant="floating" >
@@ -32,12 +44,12 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-                <SidebarMenuItem >
-                  <div className="flex">
-                  <Button onClick={()=>{callAction('destination-in')}}>Include Lasso</Button>
-                  <Button onClick={()=>{callAction('destination-out')}}>Exclude Lasso</Button>
+              <SidebarMenuItem >
+                <div className="flex">
+                  <Button onClick={() => { callAction('destination-in') }}>Include Lasso</Button>
+                  <Button onClick={() => { callAction('destination-out') }}>Exclude Lasso</Button>
                 </div>
-                </SidebarMenuItem>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

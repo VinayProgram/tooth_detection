@@ -4,6 +4,7 @@ import { processDestinationIn, processDestinationOut } from "../utils/masking";
 import * as THREE from 'three'
 export const useProcessMasks = () => {
     const { onMask, points3D, orignalImageMeshRef, boxSize, imageTexture } = useClipStore()
+    console.log(orignalImageMeshRef)
     return React.useCallback(() => {
         return actionFunction(onMask.action)({
             points3D,
@@ -21,6 +22,7 @@ export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalI
 
     React.useEffect(() => {
         if (!imageTexture.image) return;
+        console.log('random ge',orignalImageMeshRef)
         const img = imageTexture.image as HTMLImageElement;
         const w = img.width;
         const h = img.height;
@@ -29,7 +31,7 @@ export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalI
         setBoxSize([WIDTH, HEIGHT, 0.1]);
         setImageTexture(imageTexture)
         orignalImageMeshRef && setOrignalImageMeshRef(orignalImageMeshRef)
-    }, [imageTexture]);
+    }, [imageTexture,orignalImageMeshRef]);
 }
 
 

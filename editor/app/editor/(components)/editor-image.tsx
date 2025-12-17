@@ -2,7 +2,6 @@
 import { Box, Line, Mask, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { useEffect, useRef, useState } from "react";
-import { poly } from "./seg";
 import { useClipStore } from "@/app/store/clip-store";
 import { useSearchParams } from "next/navigation";
 import { useIntializeImage } from "../(hooks)/lasso-tool.hook";
@@ -34,6 +33,7 @@ const EditorImage = () => {
   return (
     <>
         <Box
+          name="orignalImage"
           args={boxSize}
           ref={orignalImageMeshRef}
           position={[0, 0, 0]}
