@@ -4,7 +4,6 @@ import { processDestinationIn, processDestinationOut } from "../utils/masking";
 import * as THREE from 'three'
 export const useProcessMasks = () => {
     const { onMask, points3D, orignalImageMeshRef, boxSize, imageTexture } = useClipStore()
-    console.log(orignalImageMeshRef)
     return React.useCallback(() => {
         return actionFunction(onMask.action)({
             points3D,
@@ -13,7 +12,7 @@ export const useProcessMasks = () => {
             texture: imageTexture!,
             originalMesh: orignalImageMeshRef!,
         });
-    }, [onMask]);
+    }, [onMask.action,onMask.newTime,orignalImageMeshRef]);
 }
 
 
@@ -22,7 +21,6 @@ export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalI
 
     React.useEffect(() => {
         if (!imageTexture.image) return;
-        console.log('random ge',orignalImageMeshRef)
         const img = imageTexture.image as HTMLImageElement;
         const w = img.width;
         const h = img.height;
@@ -35,10 +33,12 @@ export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalI
 }
 
 
-const actionFunction = (action: GlobalCompositeOperation) => {
+const actionFunction = (action: GlobalCompositeOperation|'both') => {
     switch (action) {
         case "destination-in":
             return processDestinationIn
+        case "destination-out":
+            return processDestinationOut
         default:
             return processDestinationIn;
     }

@@ -40,7 +40,6 @@ export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
   canvas.width = img.width;
   canvas.height = img.height;
   const ctx = canvas.getContext("2d")!;
-  console.log(img)
   ctx.drawImage(img, 0, 0);
 
   ctx.globalCompositeOperation = args.globalCompositeOperation;
@@ -86,9 +85,8 @@ export function processDestinationIn({
   onMask,
   texture,
   originalMesh,
-}: MaskProcessorParams): MaskProcessorResult {
+}: MaskProcessorParams):Omit<MaskProcessorResult,'excludedTexture'> {
   const masks: THREE.CanvasTexture<HTMLCanvasElement>[] = [];
-  let excludedTexture: THREE.CanvasTexture<HTMLCanvasElement> | null = null;
   for (const key in points3D) {
     const polygon = points3D[key];
     if (!polygon?.length) continue;
@@ -103,14 +101,11 @@ export function processDestinationIn({
       polygon,
       texture:texture
     });
-    console.log(mask)
     if (!mask) continue;
-
-    excludedTexture = mask;
     masks.push(mask);
   }
 
-  return { masks, excludedTexture };
+  return { masks };
 }
 
 export function processDestinationOut({
@@ -119,7 +114,7 @@ export function processDestinationOut({
   onMask,
   texture,
   originalMesh,
-}: MaskProcessorParams): MaskProcessorResult {
+}: MaskProcessorParams):Omit<MaskProcessorResult,'masks'> {
   const masks: THREE.CanvasTexture<HTMLCanvasElement>[] = [];
   let excludedTexture: THREE.CanvasTexture<HTMLCanvasElement> | null = null;
   for (const key in points3D) {
@@ -143,7 +138,7 @@ export function processDestinationOut({
     masks.push(mask);
   }
 
-  return { masks, excludedTexture };
+  return { excludedTexture };
 }
 
 //destination-in

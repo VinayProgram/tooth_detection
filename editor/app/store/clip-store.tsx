@@ -19,6 +19,9 @@ type ClipStore = {
 
   destinationInCutOuts:THREE.CanvasTexture<HTMLCanvasElement>[],
   setDestinationInCutOuts:(data:THREE.CanvasTexture<HTMLCanvasElement>[])=>void
+
+  destinationOutCutOuts:THREE.CanvasTexture<HTMLCanvasElement>|null,
+  setDestinationOutCutOuts:(data:THREE.CanvasTexture<HTMLCanvasElement>)=>void
 }
 
 export const useClipStore = create<ClipStore>()((set) => ({
@@ -42,6 +45,12 @@ setImageTexture:(img)=>set({imageTexture:img}),
 destinationInCutOuts:[],
 setDestinationInCutOuts(data) {
   set({destinationInCutOuts:data})
+},
+
+
+destinationOutCutOuts:null,
+setDestinationOutCutOuts(data) {
+  set({destinationOutCutOuts:data})
 },
 }))
 

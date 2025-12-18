@@ -12,7 +12,7 @@ const page = () => {
       <div className="flex flex-col gap-4 ">
     <Canvas style={{height:'94vh'}}>
       <RendererComponent/>
-      <OrbitControls enableRotate={true}/>
+      <OrbitControls enableRotate={false}/>
     </Canvas>
    </div>
    </div>
