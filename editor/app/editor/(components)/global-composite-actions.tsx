@@ -19,11 +19,11 @@ export const DestinationInCutOutsComponent = () => {
   return (
     <>
       {destinationInCutOuts.map((texture, index) => (
-
+        
         <Box
           key={texture.uuid ?? index}
           name={index+"_tooth"}
-          args={[1,1,1]}
+          args={boxSize}
           position={[0, 0, 0]} // spacing helps selection
           renderOrder={1}
           onPointerDown={(e) => {
@@ -45,7 +45,7 @@ export const DestinationInCutOutsComponent = () => {
         <Box
           key={texture.uuid ?? index}
           name={index+"_tooth"}
-          args={[1,1,1]}
+          args={boxSize}
           position={[0, 0, 0]} // spacing helps selection
           renderOrder={1}
           onPointerDown={(e) => {

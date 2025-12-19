@@ -34,9 +34,10 @@ const convert3DToUV = (args: ArgsForMasking) => {
 
 export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
   if (!args.texture.image || args.polygon.length === 0) return;
-  const baseTexture = cloneTexture(args.texture)
+  const baseTexture = args.texture 
 
-  const img = baseTexture.image;
+  // cloneTexture(args.texture)
+  const img = baseTexture.image as HTMLImageElement;
 
   const canvas = document.createElement("canvas");
   canvas.width = img.width;
