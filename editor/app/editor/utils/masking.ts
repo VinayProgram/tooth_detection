@@ -34,7 +34,9 @@ const convert3DToUV = (args: ArgsForMasking) => {
 
 export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
   if (!args.texture.image || args.polygon.length === 0) return;
-  const img = args.texture.image as HTMLImageElement;
+  const baseTexture = cloneTexture(args.texture)
+
+  const img = baseTexture.image;
 
   const canvas = document.createElement("canvas");
   canvas.width = img.width;
@@ -48,7 +50,6 @@ export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
     const uv = convert3DToUV({ ...args, point: p });
     return { x: uv.u * img.width, y: uv.v * img.height };
   });
-  console.warn(pts)
   ctx.beginPath();
   ctx.moveTo(pts[0].x, pts[0].y);
   pts.slice(1).forEach(pt => ctx.lineTo(pt.x, pt.y));
@@ -147,3 +148,18 @@ export function processDestinationOut({
 
 //both
 
+function cloneTexture(source: THREE.Texture): THREE.CanvasTexture {
+  const img = source.image as HTMLImageElement | HTMLCanvasElement
+
+  const canvas = document.createElement('canvas')
+  canvas.width = img.width
+  canvas.height = img.height
+
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, 0, 0)
+
+  const cloned = new THREE.CanvasTexture(canvas)
+  cloned.needsUpdate = true
+
+  return cloned
+}

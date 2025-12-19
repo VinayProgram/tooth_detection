@@ -39,30 +39,30 @@ export function AppSidebar() {
 
   const handleDestinationIn = () => {
     setOnMask({ action: "destination-in", newTime: Date.now().toString() })
-    const result: any = processMasks()
+    const result: any = processMasks('destination-in')
     setDestinationInCutOuts(result.masks)
     updateRoute("showmasks-in")
   }
 
   const handleDestinationOut = () => {
     setOnMask({ action: "destination-out", newTime: Date.now().toString() })
-    const result: any = processMasks()
+    const result: any = processMasks('destination-out')
     setDestinationOutCutOuts(result.excludedTexture)
     updateRoute("showmasks-out")
   }
 
   const handleBoth = () => {
+  
+    setOnMask({ action: "destination-out", newTime: (Date.now() + 1).toString() })
+    const outResult: any = processMasks('destination-out')
+    console.log(outResult)
     // IN
     setOnMask({ action: "destination-in", newTime: Date.now().toString() })
-    const inResult: any = processMasks()
-
-    // OUT
-    setOnMask({ action: "destination-out", newTime: (Date.now() + 1).toString() })
-    const outResult: any = processMasks()
-    console.log('--------->',inResult,'<-----------',outResult)
+    const inResult: any = processMasks('destination-in')
+    
     setDestinationInCutOuts(inResult.masks)
     setDestinationOutCutOuts(outResult.excludedTexture)
-
+    console.log(inResult,outResult)
     updateRoute("showmasks-both")
   }
 

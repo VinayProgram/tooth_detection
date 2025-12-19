@@ -1,47 +1,86 @@
 'use client'
 
-import { Box } from '@react-three/drei'
+import { Box, TransformControls } from '@react-three/drei'
 import { useClipStore } from '@/app/store/clip-store'
 import * as THREE from 'three'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 
 /* ---------------------------------------------
    DESTINATION IN CUTOUTS
 ----------------------------------------------*/
-const DestinationInCutOutsComponent = () => {
+
+
+export const DestinationInCutOutsComponent = () => {
   const { boxSize, destinationInCutOuts } = useClipStore()
+  const [activeObject, setActiveObject] = useState<THREE.Object3D | null>(null)
 
   if (!destinationInCutOuts || destinationInCutOuts.length === 0) return null
 
   return (
     <>
       {destinationInCutOuts.map((texture, index) => (
+
         <Box
           key={texture.uuid ?? index}
-          args={boxSize}
-          position={[0, 0, 0]}
+          name={index+"_tooth"}
+          args={[1,1,1]}
+          position={[0, 0, 0]} // spacing helps selection
           renderOrder={1}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            console.log(e.object)
+            setActiveObject(e.object)
+          }}
         >
           <meshBasicMaterial
-            attach="material"
             map={texture}
             transparent
             depthWrite={false}
-            depthTest={true}
-            blending={THREE.NormalBlending}
+            depthTest
           />
         </Box>
       ))}
+
+      {destinationInCutOuts.map((texture, index) => (
+        <Box
+          key={texture.uuid ?? index}
+          name={index+"_tooth"}
+          args={[1,1,1]}
+          position={[0, 0, 0]} // spacing helps selection
+          renderOrder={1}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            console.log(e.object)
+            setActiveObject(e.object)
+          }}
+        >
+          <meshBasicMaterial
+            color={"green"}
+            transparent
+            wireframe={true}
+            depthWrite={false}
+            depthTest
+          />
+        </Box>
+      ))}
+
+      {activeObject && (
+        <TransformControls
+          mode="translate"
+          object={activeObject}
+        />
+      )}
     </>
   )
 }
+
+
 
 /* ---------------------------------------------
    DESTINATION OUT CUTOUT
 ----------------------------------------------*/
 export const DestinationOutCutOutsComponent = () => {
-  const { boxSize, destinationOutCutOuts,destinationInCutOuts } = useClipStore()
-  console.log('inn',destinationInCutOuts,'out',destinationOutCutOuts)
+  const { boxSize, destinationOutCutOuts } = useClipStore()
   if (!destinationOutCutOuts) return null
 
   return (
@@ -51,6 +90,7 @@ export const DestinationOutCutOutsComponent = () => {
       renderOrder={2}
     >
       <meshBasicMaterial
+        color={"lightblue"}
         attach="material"
         map={destinationOutCutOuts}
         transparent

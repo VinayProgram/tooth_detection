@@ -3,17 +3,19 @@ import React, { RefObject } from "react";
 import { processDestinationIn, processDestinationOut } from "../utils/masking";
 import * as THREE from 'three'
 export const useProcessMasks = () => {
-    const { onMask, points3D, orignalImageMeshRef, boxSize, imageTexture } = useClipStore()
-    return React.useCallback(() => {
-        return actionFunction(onMask.action)({
+    const { points3D, orignalImageMeshRef, boxSize, imageTexture,onMask } = useClipStore()
+    return React.useCallback((action: GlobalCompositeOperation) => {
+        return actionFunction(action)({
             points3D,
             boxSize,
-            onMask,
+            onMask: { action: action },
             texture: imageTexture!,
             originalMesh: orignalImageMeshRef!,
         });
-    }, [onMask.action,onMask.newTime,orignalImageMeshRef]);
+    }, [onMask.newTime,onMask.action]);
 }
+
+
 
 
 export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalImageMeshRef: THREE.Mesh) => {
@@ -29,11 +31,12 @@ export const useIntializeImage = (imageTexture: THREE.Texture<unknown>, orignalI
         setBoxSize([WIDTH, HEIGHT, 0.1]);
         setImageTexture(imageTexture)
         orignalImageMeshRef && setOrignalImageMeshRef(orignalImageMeshRef)
-    }, [imageTexture,orignalImageMeshRef]);
+    }, [imageTexture, orignalImageMeshRef]);
 }
 
 
-const actionFunction = (action: GlobalCompositeOperation|'both') => {
+const actionFunction = (action: GlobalCompositeOperation) => {
+    console.log(action)
     switch (action) {
         case "destination-in":
             return processDestinationIn
