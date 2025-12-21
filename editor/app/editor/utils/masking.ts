@@ -36,7 +36,6 @@ export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
   if (!args.texture.image || args.polygon.length === 0) return;
   const baseTexture = args.texture 
 
-  // cloneTexture(args.texture)
   const img = baseTexture.image as HTMLImageElement;
 
   const canvas = document.createElement("canvas");
@@ -62,7 +61,93 @@ export const applyMask = (args: Omit<ArgsForMasking, "point">) => {
   return masked
 };
 
+export const applyMaskDestintionIn = (args: Omit<ArgsForMasking, "point">) => {
+  if (!args.texture.image || args.polygon.length === 0) return;
 
+  const img = args.texture.image as HTMLImageElement;
+
+  /* ---------------------------
+     1. Draw original image
+  ----------------------------*/
+  const fullCanvas = document.createElement("canvas");
+  fullCanvas.width = img.width;
+  fullCanvas.height = img.height;
+
+  const fullCtx = fullCanvas.getContext("2d")!;
+  fullCtx.drawImage(img, 0, 0);
+
+  /* ---------------------------
+     2. Convert polygon → image space
+  ----------------------------*/
+  const pts = args.polygon.map(p => {
+    const uv = convert3DToUV({ ...args, point: p });
+    return {
+      x: uv.u * img.width,
+      y: uv.v * img.height,
+    };
+  });
+
+  /* ---------------------------
+     3. Apply mask
+  ----------------------------*/
+  fullCtx.globalCompositeOperation = args.globalCompositeOperation;
+  fullCtx.beginPath();
+  fullCtx.moveTo(pts[0].x, pts[0].y);
+  pts.slice(1).forEach(pt => fullCtx.lineTo(pt.x, pt.y));
+  fullCtx.closePath();
+  fullCtx.fill();
+
+  /* ---------------------------
+     4. Compute bounding box
+  ----------------------------*/
+  let xmin = Infinity,
+      ymin = Infinity,
+      xmax = -Infinity,
+      ymax = -Infinity;
+
+  for (const p of pts) {
+    xmin = Math.min(xmin, p.x);
+    ymin = Math.min(ymin, p.y);
+    xmax = Math.max(xmax, p.x);
+    ymax = Math.max(ymax, p.y);
+  }
+
+  const width = Math.ceil(xmax - xmin);
+  const height = Math.ceil(ymax - ymin);
+
+  if (width <= 0 || height <= 0) return;
+
+  /* ---------------------------
+     5. Crop canvas
+  ----------------------------*/
+  const cropCanvas = document.createElement("canvas");
+  cropCanvas.width = width;
+  cropCanvas.height = height;
+
+  const cropCtx = cropCanvas.getContext("2d")!;
+  cropCtx.drawImage(
+    fullCanvas,
+    xmin, ymin, width, height,   // source
+    0, 0, width, height           // destination
+  );
+
+  /* ---------------------------
+     6. Create texture
+  ----------------------------*/
+  const croppedTexture = new THREE.CanvasTexture(cropCanvas);
+  croppedTexture.needsUpdate = true;
+
+  /* ---------------------------
+     7. Store metadata (IMPORTANT)
+  ----------------------------*/
+  croppedTexture.userData = {
+    bbox: { xmin, ymin, width, height },
+    originalWidth: img.width,
+    originalHeight: img.height,
+  };
+
+  return croppedTexture;
+};
 
 
 
@@ -93,7 +178,7 @@ export function processDestinationIn({
     const polygon = points3D[key];
     if (!polygon?.length) continue;
 
-    const mask = applyMask({
+    const mask = applyMaskDestintionIn({
       boxSize: {
         height: boxSize[1],
         width: boxSize[0],
@@ -143,24 +228,4 @@ export function processDestinationOut({
   return { excludedTexture };
 }
 
-//destination-in
 
-//destination-out
-
-//both
-
-function cloneTexture(source: THREE.Texture): THREE.CanvasTexture {
-  const img = source.image as HTMLImageElement | HTMLCanvasElement
-
-  const canvas = document.createElement('canvas')
-  canvas.width = img.width
-  canvas.height = img.height
-
-  const ctx = canvas.getContext('2d')!
-  ctx.drawImage(img, 0, 0)
-
-  const cloned = new THREE.CanvasTexture(canvas)
-  cloned.needsUpdate = true
-
-  return cloned
-}

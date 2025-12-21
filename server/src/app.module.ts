@@ -3,12 +3,16 @@ import { MachineLearnModule } from './application/machine-learn/machine-learn.mo
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MulterModule } from '@nestjs/platform-express';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
       ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), // Path to your static files
       serveRoot: '/static', // Optional: Prefix for serving static files
+    }),
+    CacheModule.register({
+       isGlobal: true,
     }),
     MulterModule.register({
     dest: join(__dirname, '../../..', 'public'),
