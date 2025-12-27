@@ -4,38 +4,29 @@ import { Box, Edges, TransformControls } from '@react-three/drei'
 import { useClipStore } from '@/app/store/clip-store'
 import * as THREE from 'three'
 import React, { useRef, useState } from 'react'
+import { useThree } from '@react-three/fiber'
 
-/* ---------------------------------------------
-   DESTINATION IN CUTOUTS
-----------------------------------------------*/
 
 
 export const DestinationInCutOutsComponent = () => {
-  const { destinationInCutOuts,boxSize,imageTexture } = useClipStore()
-  const [activeObject, setActiveObject] = useState<THREE.Object3D | null>(null)
-  console.log(boxSize)
-  if (!destinationInCutOuts || destinationInCutOuts.length === 0) return null
+  const { destinationInCutOuts,boxSize,imageTexture,activeObject } = useClipStore()
+    const {scene}=useThree()
 
+  if (!destinationInCutOuts || destinationInCutOuts.length === 0) return null
+  
   return (
     <>
       {destinationInCutOuts.map((texture, index) => {
-        const boxSizse = textureToBoxSize(texture)
-        console.log('>?>?>>?',boxSizse)
-          const position = bboxToWorldPosition(texture.userData.bbox,imageTexture?.image.width,imageTexture?.image.height);
 
         return (
 
           <Box
             key={texture.uuid ?? index}
-            name={index + "_tooth"}
-            args={boxSizse}
-            position={position} // spacing helps selection
+            name={texture.uuid + "_tooth"}
+            args={boxSize}
+            position={[0,0,0]} // spacing helps selection
             renderOrder={1}
-            onClick={(e) => {
-              e.stopPropagation()
-              console.log(e)
-              setActiveObject(e.object)
-            }}
+           
           >
             <meshBasicMaterial
               map={texture}
@@ -53,7 +44,7 @@ export const DestinationInCutOutsComponent = () => {
         <TransformControls
         showZ={false}
           mode="translate"
-          object={activeObject}
+          object={scene.getObjectByName(activeObject+ "_tooth")}
         />
       )}
     </>

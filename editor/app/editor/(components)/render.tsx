@@ -26,6 +26,7 @@ const RendererComponent = () => {
         <>
           <DestinationInCutOutsComponent  />
           <DestinationOutCutOutsComponent />
+         
         </>
       )
 
