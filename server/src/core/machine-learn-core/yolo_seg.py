@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "yolo11n-seg.pt")
+MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "best.pt")
 
 # Get file path from CLI
 if len(sys.argv) < 2:

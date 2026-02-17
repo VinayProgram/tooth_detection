@@ -8,10 +8,11 @@ import { useSearchParams } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarShortcut, MenubarTrigger } from "@/components/ui/menubar"
+import { Loader, LucideClockFading } from "lucide-react"
 const MenuActions = () => {
     const params = useSearchParams()
     const fileName = params.get('file')
-    const { data: points } = useGetPolygonPoints(fileName ?? "")
+    const { data: points,isLoading } = useGetPolygonPoints(fileName ?? "")
     const { setPoints3D, points3D } = useClipStore()
     const data = React.useMemo(() => {
         return points?.segments.map(segments => {
@@ -65,7 +66,8 @@ const MenuActions = () => {
                     <MenubarMenu>
                         <MenubarTrigger>Actions</MenubarTrigger>
                         <MenubarContent>
-                            <MenubarItem onClick={()=>setPoints()}>
+                            <MenubarItem onClick={()=>setPoints()} disabled={isLoading}>
+                               {isLoading&& <Loader color="blue"/>}
                                 Ai Segment <MenubarShortcut>⌘T</MenubarShortcut>
                             </MenubarItem>
                         </MenubarContent>

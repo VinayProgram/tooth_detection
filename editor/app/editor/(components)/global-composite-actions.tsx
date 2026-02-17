@@ -43,7 +43,7 @@ export const DestinationInCutOutsComponent = () => {
       {activeObject && (
         <TransformControls
         showZ={false}
-          mode="translate"
+          mode="rotate"
           object={scene.getObjectByName(activeObject+ "_tooth")}
         />
       )}
