@@ -1,6 +1,6 @@
 "use client";
 
-import { ScanDialog } from "./ScanDialog";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Star, ScanLine } from "lucide-react";
@@ -28,10 +28,17 @@ export function Hero() {
               Get professional recommendations and book appointments with top-rated dentists.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
-              <ScanDialog />
-              <Button size="lg" variant="outline" className="h-14 px-8 gap-2 text-lg">
-                Book Appointment
-                <ArrowRight className="h-5 w-5" />
+              <Button asChild size="lg" className="h-14 px-8 gap-2 text-lg">
+                <Link href="/ai-scan-dashboard">
+                  <ScanLine className="h-5 w-5" />
+                  Scan My Teeth Free
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-14 px-8 gap-2 text-lg">
+                <Link href="/bookappoinment">
+                  Book Appointment
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
               </Button>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">

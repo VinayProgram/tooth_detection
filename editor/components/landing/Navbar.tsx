@@ -24,12 +24,14 @@ export function Navbar() {
           </Link>
         </nav>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden sm:inline-flex">
-            Sign In
+          <Button asChild variant="ghost" className="hidden sm:inline-flex">
+            <Link href="/signin">Sign In</Link>
           </Button>
-          <Button className="gap-2">
-            <ScanLine className="h-4 w-4" />
-            Book Now
+          <Button asChild className="gap-2">
+            <Link href="/bookappoinment">
+              <ScanLine className="h-4 w-4" />
+              Book Now
+            </Link>
           </Button>
         </div>
       </div>
