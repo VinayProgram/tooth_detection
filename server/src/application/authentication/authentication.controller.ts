@@ -34,7 +34,7 @@ export class AuthenticationController {
 
     @Post('logout')
     async logout(@Res({ passthrough: true }) response: Response) {
-        response.clearCookie('access_token');
+        response.clearCookie('Authorization');
         return { message: 'Logged out' };
     }
 }
