@@ -19,7 +19,7 @@ export class AuthenticationController {
     ) {
         const result = await this.authenticationService.login(body.email, body.pass);
 
-        response.cookie('access_token', result.access_token, {
+        response.cookie('Authorization', result.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
