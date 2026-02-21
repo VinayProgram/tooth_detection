@@ -8,19 +8,41 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Stethoscope, Loader2 } from "lucide-react";
+import axios from "axios";
 
 export default function SignInPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate sign in
-    setTimeout(() => {
-      localStorage.setItem("isLoggedIn", "true");
-      router.push("/aiscan");
-    }, 1500);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const pass = formData.get("password") as string;
+
+    try {
+      const response = await axios.post("http://localhost:7541/authentication/login", {
+        email,
+        pass
+      }, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        router.push("/aiscan-dashboard"); // Redirecting to the dashboard
+      }
+    } catch (err: any) {
+      console.error("Signin error:", err);
+      setError(err.response?.data?.message || "Invalid email or password.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,16 +62,21 @@ export default function SignInPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm text-center">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="name@example.com" required className="h-12" />
+              <Input name="email" id="email" type="email" placeholder="name@example.com" required className="h-12" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required className="h-12" />
+              <Input name="password" id="password" type="password" required className="h-12" />
             </div>
-            <Button className="w-full h-12 text-lg font-semibold mt-2" disabled={isLoading}>
+            <Button type="submit" className="w-full h-12 text-lg font-semibold mt-2" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Sign In"}
             </Button>
           </form>
